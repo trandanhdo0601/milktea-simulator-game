@@ -1,9 +1,10 @@
-import { Navigate, NavLink, Route, Routes } from 'react-router-dom'
+import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import { useAuth } from './auth.jsx'
 import AuthPage from './pages/AuthPage.jsx'
 import Play from './pages/Play.jsx'
 import History from './pages/History.jsx'
 import Stats from './pages/Stats.jsx'
+import { IconChart, IconHistory, IconLogo, IconLogout, IconMix } from './components/Icons.jsx'
 
 function Private({ children }) {
   const { isAuthed } = useAuth()
@@ -14,23 +15,32 @@ export default function App() {
   const { isAuthed, username, logout } = useAuth()
   return (
     <>
-      <header className="bar">
-        <span className="brand">Tiệm Trà Sữa</span>
-        {isAuthed && (
-          <>
-            <nav className="nav">
-              <NavLink to="/" end>Pha chế</NavLink>
-              <NavLink to="/history">Lịch sử</NavLink>
-              <NavLink to="/stats">Thống kê</NavLink>
-            </nav>
-            <div className="who">
-              <span>{username}</span>
-              <button className="btn ghost" onClick={logout}>Đăng xuất</button>
-            </div>
-          </>
-        )}
+      <header className="topbar">
+        <div className="topbar-in">
+          <Link to="/" className="brand" aria-label="Tiệm Trà Sữa — trang chủ">
+            <span className="brand-mark"><IconLogo size={22} /></span>
+            <span className="brand-name">Tiệm Trà Sữa</span>
+          </Link>
+          {isAuthed && (
+            <>
+              <nav className="nav" aria-label="Điều hướng chính">
+                <NavLink to="/" end><IconMix size={19} /><span>Pha chế</span></NavLink>
+                <NavLink to="/history"><IconHistory size={19} /><span>Lịch sử</span></NavLink>
+                <NavLink to="/stats"><IconChart size={19} /><span>Thống kê</span></NavLink>
+              </nav>
+              <div className="who">
+                <span className="avatar" aria-hidden="true">{(username || '?').charAt(0).toUpperCase()}</span>
+                <span className="who-name">{username}</span>
+                <button className="btn ghost sm" onClick={logout} aria-label="Đăng xuất">
+                  <IconLogout size={17} />
+                  <span className="who-out">Đăng xuất</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </header>
-      <main className="wrap">
+      <main className="page">
         <Routes>
           <Route path="/auth" element={isAuthed ? <Navigate to="/" replace /> : <AuthPage />} />
           <Route path="/" element={<Private><Play /></Private>} />

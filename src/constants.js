@@ -30,10 +30,10 @@ export const FIELDS = [
 ]
 
 export const RATING = {
-  PERFECT: { label: 'Hoàn hảo', tone: 'perfect' },
-  GREAT: { label: 'Rất tốt', tone: 'great' },
-  NEEDS_IMPROVEMENT: { label: 'Cần cải thiện', tone: 'ok' },
-  FAILED: { label: 'Thất bại', tone: 'fail' },
+  PERFECT: { label: 'Hoàn hảo', tone: 'perfect', blurb: 'Đúng từng thành phần. Khách khen hết lời!' },
+  GREAT: { label: 'Rất tốt', tone: 'great', blurb: 'Gần như hoàn hảo, chỉ lệch một chút.' },
+  NEEDS_IMPROVEMENT: { label: 'Cần cải thiện', tone: 'ok', blurb: 'Còn vài chỗ chưa đúng. Xem lại công thức bên dưới.' },
+  FAILED: { label: 'Thất bại', tone: 'fail', blurb: 'Ly này chưa đạt. Thử lại với đơn tiếp theo nhé.' },
 }
 
 export function labelOf(key, value) {

@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
     setUsername('')
   }, [])
 
-  useEffect(() => setUnauthorizedHandler(logout), [logout])
+  useEffect(() => { setUnauthorizedHandler(logout) }, [logout])
 
   const login = useCallback(async (u, p) => {
     const data = await api.login({ username: u, password: p })
