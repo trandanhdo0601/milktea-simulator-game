@@ -1,61 +1,84 @@
-# 🧋 Milk Tea Mini Game — Backend API
+# 🧋 Milk Tea Mini Game — Fullstack Web Game
 
-Web game mô phỏng pha chế trà sữa. Backend xây dựng bằng **Java 21 + Spring Boot 3.3 + MySQL 8.4**.
+Web game mô phỏng pha chế trà sữa.
+- **Backend:** Java 21 + Spring Boot 3.3 + MySQL 8.4 + Spring Security (JWT)
+- **Frontend:** React 18 + Vite
+
+---
 
 ## 🏗️ Cấu trúc project
 
 ```
 milk-tea-game/
-├── src/main/java/com/example/milkteagame/
-│   ├── config/                 # JWT Provider, JWT Filter, Security Config
-│   ├── auth/                   # AuthController, AuthService, dto/
-│   ├── user/                   # User entity, UserRepository
-│   ├── order/                  # GameOrder entity, GameOrderRepository
-│   ├── game/                   # GameController, GameService, GameResult, dto/
-│   └── common/                 # ApiResponse, GlobalExceptionHandler
-├── src/main/resources/
-│   ├── application.yml
-│   └── db/migration/
-│       ├── V1__create_tables.sql   # Tạo 3 bảng
-│       └── V2__seed_game_orders.sql # 10 đơn hàng mẫu
-├── src/test/                   # Unit tests (GameServiceTest)
-├── docker-compose.yml          # MySQL 8.4
-├── .env                        # Biến môi trường (KHÔNG commit)
-└── pom.xml
+├── src/
+│   ├── main/java/com/example/milkteagame/   # Spring Boot Backend code
+│   │   ├── config/                          # JWT, Security Config, CORS
+│   │   ├── auth/                            # AuthController, AuthService, dto/
+│   │   ├── user/                            # User entity, UserRepository
+│   │   ├── order/                           # GameOrder entity, GameOrderRepository
+│   │   ├── game/                            # GameController, GameService, GameResult, dto/
+│   │   └── common/                          # ApiResponse, GlobalExceptionHandler
+│   ├── main/resources/
+│   │   ├── application.yml
+│   │   └── db/migration/                    # Flyway migrations (tables, seed data)
+│   ├── test/                                # Backend unit tests
+│   ├── App.jsx                              # Frontend Root Component
+│   ├── main.jsx                             # Frontend Entry point
+│   ├── api.js                               # API Client & Axios/Fetch wrapper
+│   ├── auth.jsx                             # Auth Context
+│   ├── combo.js                             # Logic Combo game
+│   ├── sfx.js                               # Hiệu ứng âm thanh
+│   ├── constants.js                         # Công thức & hằng số game
+│   ├── styles.css                           # Giao diện CSS
+│   ├── components/                          # UI components (Cup, Swatch, Icons...)
+│   └── pages/                               # Pages: Play, History, Stats, AuthPage
+├── docker-compose.yml                       # MySQL 8.4
+├── .env.example                             # Mẫu biến môi trường
+├── index.html                               # Frontend HTML
+├── package.json                             # Frontend dependencies & scripts
+├── vite.config.js                           # Vite config (Proxy /api -> localhost:8080)
+└── pom.xml                                  # Maven dependencies
 ```
 
-## 🚀 Hướng dẫn chạy
+---
 
-### Bước 1 — Khởi động MySQL bằng Docker
+## 🚀 Hướng dẫn chạy ứng dụng
+
+### 1. Khởi động MySQL Database
 
 ```bash
-# Copy .env nếu chưa có
-cp .env.example .env   # rồi sửa mật khẩu
-
-# Khởi động MySQL
+# Khởi động MySQL qua Docker
 docker compose up -d
 
-# Kiểm tra container
+# Kiểm tra container đang chạy (Port 3307)
 docker compose ps
 ```
 
-### Bước 2 — Cấu hình biến môi trường trong IntelliJ
+### 2. Chạy Backend (Spring Boot - Port 8080)
 
-Vào **Run > Edit Configurations > Environment Variables**, thêm:
-
+Cấu hình các biến môi trường:
 ```
 MYSQL_PASSWORD=MilkTeaApp@2024!
 JWT_SECRET=bWlsa1RlYUdhbWVTZWNyZXRLZXlGb3JKV1RBdXRoZW50aWNhdGlvbjIwMjQ=
 JWT_EXPIRATION=86400000
 ```
 
-> Hoặc dùng plugin **EnvFile** để load tự động từ file `.env`.
+Chạy từ terminal hoặc IntelliJ IDEA:
+```bash
+./mvnw.cmd spring-boot:run
+```
+Flyway sẽ tự động tạo bảng và seed 10 đơn hàng mẫu khi ứng dụng khởi động.
 
-### Bước 3 — Chạy Spring Boot
+### 3. Chạy Frontend (React Vite - Port 5173)
 
-Mở IntelliJ → Run `MilkTeaGameApplication`.
+Cài đặt thư viện và khởi chạy Vite dev server:
+```bash
+npm.cmd install
+npm.cmd run dev
+```
+Mở trình duyệt: **http://localhost:5173**
 
-Flyway sẽ tự động tạo bảng và seed 10 đơn hàng khi app khởi động.
+> **Lưu ý:** Vite đã cấu hình proxy tự động chuyển tiếp tất cả request `/api/*` về `http://localhost:8080`, tránh hoàn toàn lỗi CORS khi chạy dev.
 
 ---
 
@@ -68,11 +91,10 @@ Flyway sẽ tự động tạo bảng và seed 10 đơn hàng khi app khởi đ�
 | GET | `/api/game/orders/random` | JWT | Lấy đơn hàng ngẫu nhiên |
 | GET | `/api/game/orders/{id}` | JWT | Xem chi tiết đơn hàng |
 | POST | `/api/game/submit` | JWT | Nộp công thức pha chế |
-| GET | `/api/game/history?page=0&size=10` | JWT | Lịch sử chơi |
+| GET | `/api/game/history?page=0&size=10` | JWT | Lịch sử chơi (phân trang) |
 | GET | `/api/game/statistics` | JWT | Thống kê cá nhân |
 
 ### Header xác thực
-
 ```
 Authorization: Bearer <access_token>
 ```
@@ -90,7 +112,6 @@ Authorization: Bearer <access_token>
 | topping | `NONE`, `BLACK_PEARL`, `WHITE_PEARL`, `PUDDING` | 20 |
 
 ### Rating
-
 | Điểm | Rating |
 |------|--------|
 | 100 | PERFECT |
@@ -111,73 +132,7 @@ Kết nối từ IntelliJ/Workbench:
 
 ---
 
-## 🧪 Kiểm thử với Postman
+## ⚙️ Công nghệ sử dụng
 
-Project đã có sẵn file collection: [`postman_collection.json`](file:///f:/Project/boba/postman_collection.json).
-1. Mở Postman → chọn **Import** → chọn file `postman_collection.json`.
-2. Chạy request **Login User** → script tự động lưu `accessToken` vào collection variable `token`.
-3. Mọi request tiếp theo (Get Random Order, Submit Recipe, History, Statistics) sẽ tự động đính kèm token.
-
-### Các endpoint mẫu:
-
-```http
-POST http://localhost:8080/api/auth/register
-Content-Type: application/json
-
-{
-  "username": "player01",
-  "email": "player01@example.com",
-  "password": "StrongPass123!"
-}
-```
-
-### 2. Đăng nhập
-
-```http
-POST http://localhost:8080/api/auth/login
-Content-Type: application/json
-
-{
-  "username": "player01",
-  "password": "StrongPass123!"
-}
-```
-
-Copy `data.accessToken` từ response.
-
-### 3. Lấy đơn hàng ngẫu nhiên
-
-```http
-GET http://localhost:8080/api/game/orders/random
-Authorization: Bearer <token>
-```
-
-### 4. Nộp công thức
-
-```http
-POST http://localhost:8080/api/game/submit
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "orderId": 1,
-  "teaType": "BLACK_TEA",
-  "milkType": "FRESH_MILK",
-  "sugarLevel": 50,
-  "iceLevel": "LESS",
-  "topping": "BLACK_PEARL"
-}
-```
-
----
-
-## ⚙️ Công nghệ
-
-- Java 21 LTS
-- Spring Boot 3.3.5
-- Spring Security + JWT (JJWT 0.12.6)
-- Spring Data JPA + Hibernate
-- MySQL 8.4 (Docker)
-- Flyway Migration
-- Lombok
-- Maven 3.9.x
+- **Backend:** Java 21 LTS, Spring Boot 3.3.5, Spring Security, JJWT, Spring Data JPA, Hibernate, MySQL 8.4, Flyway Migration, Maven.
+- **Frontend:** React 18, React Router DOM, Vite, Vanilla CSS.

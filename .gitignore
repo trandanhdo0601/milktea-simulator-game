@@ -3,6 +3,12 @@
 .env.*
 !.env.example
 
+# Frontend Node.js
+node_modules/
+dist/
+dist-ssr/
+*.local
+
 # Maven
 target/
 !.mvn/wrapper/maven-wrapper.jar
