@@ -50,7 +50,7 @@ public class GameResult {
     @Column(name = "is_perfect", nullable = false)
     private Boolean isPerfect;
 
-    @Column(name = "duration_seconds", nullable = false)
+    @Column(name = "duration_seconds", nullable = false, columnDefinition = "DECIMAL(6,2)")
     private Double durationSeconds;
 
     @Column(name = "created_at", nullable = false, updatable = false)
