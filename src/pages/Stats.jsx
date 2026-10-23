@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../api.js'
 import Cup from '../components/Cup.jsx'
 import { EmptyState, ErrorNote, PageHead } from '../components/Ui.jsx'
+import { fmtSecs, fmtTotal } from '../format.js'
 
 const R = 54
 const C = 2 * Math.PI * R
@@ -67,6 +68,20 @@ export default function Stats() {
         <section className="tile">
           <p className="tile-label">Điểm cao nhất</p>
           <p className="tile-num">{s.highestScore}<small>/100</small></p>
+        </section>
+        <section className="tile">
+          <p className="tile-label">Tổng thời gian chơi</p>
+          <p className="tile-num tile-num--sm">{fmtTotal(s.totalPlayTimeSeconds)}</p>
+        </section>
+        <section className="tile">
+          <p className="tile-label">Thời gian TB mỗi ly</p>
+          <p className="tile-num tile-num--sm">{fmtSecs(s.averageDurationSeconds)}</p>
+        </section>
+        <section className="tile tile-best">
+          <p className="tile-label">Ly hoàn hảo nhanh nhất</p>
+          {s.fastestPerfectSeconds != null
+            ? <p className="tile-num tile-num--sm">{fmtSecs(s.fastestPerfectSeconds)}</p>
+            : <p className="muted">Chưa có. Đạt 100 điểm để lập kỷ lục.</p>}
         </section>
       </div>
     </div>
