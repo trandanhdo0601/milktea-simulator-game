@@ -9,6 +9,7 @@ import Swatch from '../components/Swatch.jsx'
 import { ErrorNote } from '../components/Ui.jsx'
 import { IconCheck, IconCross, IconFlame, IconMute, IconRefresh, IconSound, IconTimer } from '../components/Icons.jsx'
 import { FIELDS, RATING, labelOf, titleOf } from '../constants.js'
+import { fmtSecs } from '../format.js'
 
 const EMPTY = { teaType: null, milkType: null, sugarLevel: null, iceLevel: null, topping: null }
 const MAX_POINTS = FIELDS.reduce((s, f) => s + f.points, 0)
@@ -27,7 +28,6 @@ const readMode = () => {
     return 'normal'
   }
 }
-const fmtSecs = (s) => `${s.toFixed(1).replace('.', ',')}s`
 const reduceMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 export default function Play() {
@@ -116,12 +116,14 @@ export default function Play() {
     const o = orderRef.current
     if (!o) return
     const elapsed = (Date.now() - startedAt.current) / 1000
+    // BE nhận durationSeconds trong khoảng 0..3600 (nếu vượt sẽ trả 400)
+    const durationSeconds = Math.min(3600, Math.max(0, Math.round(elapsed * 100) / 100))
     setBusy(true)
     setError('')
     try {
-      const res = await api.submit({ orderId: o.id, ...recipeRef.current })
+      const res = await api.submit({ orderId: o.id, ...recipeRef.current, durationSeconds })
       const c = res.rating === 'PERFECT' ? combo.hit() : combo.miss()
-      setExtra({ elapsed, ...c })
+      setExtra({ elapsed: res.durationSeconds ?? durationSeconds, ...c }) // ưu tiên số BE đã lưu
       setResult(res)
       sfx.rating(res.rating, c.cur)
       if (res.rating === 'PERFECT') setBurst((b) => b + 1)
