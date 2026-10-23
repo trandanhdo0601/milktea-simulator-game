@@ -70,7 +70,7 @@ class GameServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         given(userRepository.findByUsername("player01")).willReturn(Optional.of(sampleUser));
-        given(orderRepository.findById(1L)).willReturn(Optional.of(sampleOrder));
+        org.mockito.Mockito.lenient().when(orderRepository.findById(1L)).thenReturn(Optional.of(sampleOrder));
     }
 
     @Test
@@ -158,6 +158,74 @@ class GameServiceTest {
         response.getDetails().forEach(d ->
                 assertThat(d.getExpected()).isNull()
         );
+    }
+
+    @Test
+    @DisplayName("Nộp bài kèm thời gian chơi (durationSeconds) trả về đúng thời gian")
+    void submit_withDurationSeconds_persistsAndReturnsDuration() {
+        SubmitRequest request = buildRequest("BLACK_TEA", "FRESH_MILK", 50, "LESS", "BLACK_PEARL");
+        request.setDurationSeconds(5.42);
+
+        SubmitResponse response = gameService.submit(request);
+
+        assertThat(response.getDurationSeconds()).isEqualTo(5.42);
+    }
+
+    @Test
+    @DisplayName("Thống kê cá nhân trả về đầy đủ các chỉ số thời gian chơi")
+    void getStatistics_includesPlayTimeMetrics() {
+        given(resultRepository.countByUserId(1L)).willReturn(10L);
+        given(resultRepository.countByUserIdAndIsPerfectTrue(1L)).willReturn(5L);
+        given(resultRepository.findMaxScoreByUserId(1L)).willReturn(Optional.of(100));
+        given(resultRepository.findAvgScoreByUserId(1L)).willReturn(Optional.of(88.5));
+        given(resultRepository.findTotalDurationByUserId(1L)).willReturn(65.4);
+        given(resultRepository.findAvgDurationByUserId(1L)).willReturn(6.54);
+        given(resultRepository.findFastestPerfectByUserId(1L)).willReturn(Optional.of(3.82));
+
+        var stats = gameService.getStatistics();
+
+        assertThat(stats.getTotalPlays()).isEqualTo(10L);
+        assertThat(stats.getPerfectPlays()).isEqualTo(5L);
+        assertThat(stats.getHighestScore()).isEqualTo(100);
+        assertThat(stats.getAverageScore()).isEqualTo(88);
+        assertThat(stats.getTotalPlayTimeSeconds()).isEqualTo(65.4);
+        assertThat(stats.getAverageDurationSeconds()).isEqualTo(6.54);
+        assertThat(stats.getFastestPerfectSeconds()).isEqualTo(3.82);
+    }
+
+    @Test
+    @DisplayName("Bảng xếp hạng trả về top người chơi và xác định đúng thứ hạng của user hiện tại")
+    void getLeaderboard_mapsTopPlayersAndMyRankCorrectly() {
+        LeaderboardRowProjection row1 = mockLeaderboardRow(2L, "barista_pro", 500L, 5L, 5L, 25.0, 100.0, 4.2);
+        LeaderboardRowProjection row2 = mockLeaderboardRow(1L, "player01", 450L, 5L, 4L, 30.0, 90.0, 5.1);
+
+        given(resultRepository.findAllLeaderboardByTotalScore()).willReturn(java.util.List.of(row1, row2));
+
+        var response = gameService.getLeaderboard(com.example.milkteagame.game.dto.LeaderboardType.TOTAL_SCORE, 10);
+
+        assertThat(response.getType()).isEqualTo(com.example.milkteagame.game.dto.LeaderboardType.TOTAL_SCORE);
+        assertThat(response.getTopPlayers()).hasSize(2);
+        assertThat(response.getTopPlayers().get(0).getUsername()).isEqualTo("barista_pro");
+        assertThat(response.getTopPlayers().get(0).getRank()).isEqualTo(1);
+
+        assertThat(response.getMyRank()).isNotNull();
+        assertThat(response.getMyRank().getUserId()).isEqualTo(1L);
+        assertThat(response.getMyRank().getRank()).isEqualTo(2);
+    }
+
+    private LeaderboardRowProjection mockLeaderboardRow(
+            Long userId, String username, Long totalScore, Long totalPlays,
+            Long perfectPlays, Double totalPlayTime, Double avgScore, Double fastest) {
+        return new LeaderboardRowProjection() {
+            @Override public Long getUserId() { return userId; }
+            @Override public String getUsername() { return username; }
+            @Override public Long getTotalScore() { return totalScore; }
+            @Override public Long getTotalPlays() { return totalPlays; }
+            @Override public Long getPerfectPlays() { return perfectPlays; }
+            @Override public Double getTotalPlayTimeSeconds() { return totalPlayTime; }
+            @Override public Double getAvgScore() { return avgScore; }
+            @Override public Double getFastestPerfectSeconds() { return fastest; }
+        };
     }
 
     // ── helpers ──────────────────────────────────────────

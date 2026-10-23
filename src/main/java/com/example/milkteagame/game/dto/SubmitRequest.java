@@ -40,6 +40,10 @@ public class SubmitRequest {
              message = "topping phải là NONE, BLACK_PEARL, WHITE_PEARL hoặc PUDDING")
     private String topping;
 
+    @DecimalMin(value = "0.0", message = "durationSeconds không được nhỏ hơn 0")
+    @DecimalMax(value = "3600.0", message = "durationSeconds không được vượt quá 3600 giây")
+    private Double durationSeconds;
+
     /** Validate sugarLevel chỉ nhận 0, 25, 50, 75, 100 */
     @AssertTrue(message = "sugarLevel phải là 0, 25, 50, 75 hoặc 100")
     public boolean isSugarLevelValid() {

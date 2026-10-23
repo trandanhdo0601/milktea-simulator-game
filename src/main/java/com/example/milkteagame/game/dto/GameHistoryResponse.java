@@ -22,6 +22,7 @@ public class GameHistoryResponse {
     private Integer score;
     private String rating;
     private Boolean isPerfect;
+    private Double durationSeconds;
     private LocalDateTime createdAt;
 
     public static GameHistoryResponse from(GameResult result) {
@@ -36,6 +37,7 @@ public class GameHistoryResponse {
                 .score(result.getScore())
                 .rating(ratingFromScore(result.getScore()))
                 .isPerfect(result.getIsPerfect())
+                .durationSeconds(result.getDurationSeconds())
                 .createdAt(result.getCreatedAt())
                 .build();
     }

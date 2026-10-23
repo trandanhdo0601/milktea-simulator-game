@@ -50,11 +50,17 @@ public class GameResult {
     @Column(name = "is_perfect", nullable = false)
     private Boolean isPerfect;
 
+    @Column(name = "duration_seconds", nullable = false)
+    private Double durationSeconds;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
+        if (this.durationSeconds == null) {
+            this.durationSeconds = 0.0;
+        }
     }
 }

@@ -125,6 +125,7 @@ public class GameService {
 
         boolean isPerfect = totalScore == 100;
         String rating = computeRating(totalScore);
+        double durationSeconds = request.getDurationSeconds() != null ? request.getDurationSeconds() : 0.0;
 
         // 4. Lưu kết quả vào DB (trong @Transactional)
         GameResult result = GameResult.builder()
@@ -137,6 +138,7 @@ public class GameService {
                 .topping(request.getTopping())
                 .score(totalScore)
                 .isPerfect(isPerfect)
+                .durationSeconds(durationSeconds)
                 .build();
         resultRepository.save(result);
 
@@ -145,6 +147,7 @@ public class GameService {
                 .score(totalScore)
                 .rating(rating)
                 .isPerfect(isPerfect)
+                .durationSeconds(durationSeconds)
                 .details(details)
                 .build();
     }
@@ -164,7 +167,7 @@ public class GameService {
     }
 
     /**
-     * Thống kê cá nhân: tổng lượt, lượt perfect, điểm cao nhất, điểm TB.
+     * Thống kê cá nhân: tổng lượt, lượt perfect, điểm cao nhất, điểm TB, tổng và tốc độ chơi.
      */
     public StatisticsResponse getStatistics() {
         User currentUser = getCurrentUser();
@@ -176,11 +179,71 @@ public class GameService {
         int  averageScore  = resultRepository.findAvgScoreByUserId(userId)
                                              .map(Double::intValue).orElse(0);
 
+        Double totalDuration = resultRepository.findTotalDurationByUserId(userId);
+        Double avgDuration   = resultRepository.findAvgDurationByUserId(userId);
+        Double fastest       = resultRepository.findFastestPerfectByUserId(userId).orElse(null);
+
         return StatisticsResponse.builder()
                 .totalPlays(totalPlays)
                 .perfectPlays(perfectPlays)
                 .highestScore(highestScore)
                 .averageScore(averageScore)
+                .totalPlayTimeSeconds(totalDuration != null ? Math.round(totalDuration * 100.0) / 100.0 : 0.0)
+                .averageDurationSeconds(avgDuration != null ? Math.round(avgDuration * 100.0) / 100.0 : 0.0)
+                .fastestPerfectSeconds(fastest != null ? Math.round(fastest * 100.0) / 100.0 : null)
+                .build();
+    }
+
+    /**
+     * Lấy bảng xếp hạng theo tiêu chí (TOTAL_SCORE, PERFECT_COUNT, SPEEDRUN)
+     * kèm theo thứ hạng của người chơi hiện tại.
+     */
+    public LeaderboardResponse getLeaderboard(LeaderboardType type, int limit) {
+        LeaderboardType actualType = type != null ? type : LeaderboardType.TOTAL_SCORE;
+        int effectiveLimit = limit > 0 ? Math.min(limit, 100) : 20;
+
+        User currentUser = getCurrentUser();
+        Long currentUserId = currentUser.getId();
+
+        List<LeaderboardRowProjection> allRows = switch (actualType) {
+            case TOTAL_SCORE -> resultRepository.findAllLeaderboardByTotalScore();
+            case PERFECT_COUNT -> resultRepository.findAllLeaderboardByPerfectCount();
+            case SPEEDRUN -> resultRepository.findAllLeaderboardBySpeedrun();
+        };
+
+        List<LeaderboardEntryResponse> topPlayers = new ArrayList<>();
+        LeaderboardEntryResponse myRank = null;
+
+        for (int i = 0; i < allRows.size(); i++) {
+            LeaderboardRowProjection row = allRows.get(i);
+            int rank = i + 1;
+            LeaderboardEntryResponse entry = LeaderboardEntryResponse.builder()
+                    .rank(rank)
+                    .userId(row.getUserId())
+                    .username(row.getUsername())
+                    .totalScore(row.getTotalScore())
+                    .totalPlays(row.getTotalPlays())
+                    .perfectPlays(row.getPerfectPlays())
+                    .totalPlayTimeSeconds(row.getTotalPlayTimeSeconds() != null ? Math.round(row.getTotalPlayTimeSeconds() * 100.0) / 100.0 : 0.0)
+                    .avgScore(row.getAvgScore() != null ? Math.round(row.getAvgScore() * 10.0) / 10.0 : 0.0)
+                    .fastestPerfectSeconds(row.getFastestPerfectSeconds() != null ? Math.round(row.getFastestPerfectSeconds() * 100.0) / 100.0 : null)
+                    .build();
+
+            if (i < effectiveLimit) {
+                topPlayers.add(entry);
+            }
+            if (row.getUserId().equals(currentUserId)) {
+                myRank = entry;
+            }
+            if (i >= effectiveLimit && myRank != null) {
+                break;
+            }
+        }
+
+        return LeaderboardResponse.builder()
+                .type(actualType)
+                .topPlayers(topPlayers)
+                .myRank(myRank)
                 .build();
     }
 

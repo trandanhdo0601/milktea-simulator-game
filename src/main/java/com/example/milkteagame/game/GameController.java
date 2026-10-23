@@ -66,11 +66,24 @@ public class GameController {
 
     /**
      * GET /api/game/statistics
-     * Thống kê cá nhân: tổng lượt, perfect, điểm cao nhất, điểm trung bình.
+     * Thống kê cá nhân: tổng lượt, perfect, điểm cao nhất, điểm trung bình, thời gian chơi.
      */
     @GetMapping("/statistics")
     public ResponseEntity<ApiResponse<StatisticsResponse>> getStatistics() {
         StatisticsResponse stats = gameService.getStatistics();
         return ResponseEntity.ok(ApiResponse.ok(stats));
+    }
+
+    /**
+     * GET /api/game/leaderboard?type=TOTAL_SCORE&limit=20
+     * Bảng xếp hạng người chơi theo tiêu chí (TOTAL_SCORE, PERFECT_COUNT, SPEEDRUN)
+     * kèm thứ hạng của chính người dùng hiện tại.
+     */
+    @GetMapping("/leaderboard")
+    public ResponseEntity<ApiResponse<LeaderboardResponse>> getLeaderboard(
+            @RequestParam(defaultValue = "TOTAL_SCORE") LeaderboardType type,
+            @RequestParam(defaultValue = "20") int limit) {
+        LeaderboardResponse leaderboard = gameService.getLeaderboard(type, limit);
+        return ResponseEntity.ok(ApiResponse.ok(leaderboard));
     }
 }

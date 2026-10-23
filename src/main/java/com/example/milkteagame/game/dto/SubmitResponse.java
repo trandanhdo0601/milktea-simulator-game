@@ -14,6 +14,7 @@ public class SubmitResponse {
     private Integer score;
     private String rating;
     private Boolean isPerfect;
+    private Double durationSeconds;
     private List<IngredientDetail> details;
 
     @Getter

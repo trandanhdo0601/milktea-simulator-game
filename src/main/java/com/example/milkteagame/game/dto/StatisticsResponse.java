@@ -13,4 +13,7 @@ public class StatisticsResponse {
     private long perfectPlays;
     private int highestScore;
     private int averageScore;
+    private double totalPlayTimeSeconds;
+    private double averageDurationSeconds;
+    private Double fastestPerfectSeconds;
 }

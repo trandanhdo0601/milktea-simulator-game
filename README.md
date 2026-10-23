@@ -90,9 +90,10 @@ Mở trình duyệt: **http://localhost:5173**
 | POST | `/api/auth/login` | Public | Đăng nhập, nhận JWT |
 | GET | `/api/game/orders/random` | JWT | Lấy đơn hàng ngẫu nhiên |
 | GET | `/api/game/orders/{id}` | JWT | Xem chi tiết đơn hàng |
-| POST | `/api/game/submit` | JWT | Nộp công thức pha chế |
-| GET | `/api/game/history?page=0&size=10` | JWT | Lịch sử chơi (phân trang) |
-| GET | `/api/game/statistics` | JWT | Thống kê cá nhân |
+| POST | `/api/game/submit` | JWT | Nộp công thức pha chế (hỗ trợ `durationSeconds`) |
+| GET | `/api/game/history?page=0&size=10` | JWT | Lịch sử chơi (kèm thời gian pha chế `durationSeconds`) |
+| GET | `/api/game/statistics` | JWT | Thống kê cá nhân (kèm tổng thời gian chơi, tốc độ TB, kỷ lục) |
+| GET | `/api/game/leaderboard?type=...&limit=...` | JWT | Bảng xếp hạng (`TOTAL_SCORE`, `PERFECT_COUNT`, `SPEEDRUN`) |
 
 ### Header xác thực
 ```
