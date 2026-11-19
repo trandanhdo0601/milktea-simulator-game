@@ -73,8 +73,8 @@ Flyway sẽ tự động tạo bảng và seed 10 đơn hàng mẫu khi ứng d�
 
 Cài đặt thư viện và khởi chạy Vite dev server:
 ```bash
-npm.cmd install
-npm.cmd run dev
+npm install
+npm run dev
 ```
 Mở trình duyệt: **http://localhost:5173**
 
