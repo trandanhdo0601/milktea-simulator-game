@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { api } from '../api.js'
 import Swatch from '../components/Swatch.jsx'
 import { EmptyState, ErrorNote, PageHead } from '../components/Ui.jsx'
-import { IconChevronLeft, IconChevronRight } from '../components/Icons.jsx'
+import { IconChevronLeft, IconChevronRight, IconTimer } from '../components/Icons.jsx'
 import { FIELDS, RATING, labelOf } from '../constants.js'
+import { fmtSecs } from '../format.js'
 
 export default function History() {
   const [page, setPage] = useState(0)
@@ -36,7 +37,7 @@ export default function History() {
         <div className="table-wrap">
           <table className="history">
             <thead>
-              <tr><th>Thời gian</th><th>Đơn</th><th>Công thức đã nộp</th><th>Điểm</th><th>Xếp loại</th></tr>
+              <tr><th>Thời gian</th><th>Đơn</th><th>Thời gian pha</th><th>Công thức đã nộp</th><th>Điểm</th><th>Xếp loại</th></tr>
             </thead>
             <tbody>
               {data.content.map((h) => {
@@ -49,6 +50,9 @@ export default function History() {
                       <span>{d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>
                     </td>
                     <td className="c-order">#{h.orderId}</td>
+                    <td className="c-dur">
+                      {h.durationSeconds > 0 ? <span><IconTimer size={14} />{fmtSecs(h.durationSeconds)}</span> : <span className="muted" title="Lượt chơi cũ chưa ghi thời gian">—</span>}
+                    </td>
                     <td className="c-recipe">
                       <ul className="rtags">
                         {FIELDS.map((f) => (

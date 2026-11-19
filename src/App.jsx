@@ -4,7 +4,8 @@ import AuthPage from './pages/AuthPage.jsx'
 import Play from './pages/Play.jsx'
 import History from './pages/History.jsx'
 import Stats from './pages/Stats.jsx'
-import { IconChart, IconHistory, IconLogo, IconLogout, IconMix } from './components/Icons.jsx'
+import Leaderboard from './pages/Leaderboard.jsx'
+import { IconChart, IconHistory, IconLogo, IconLogout, IconMix, IconTrophy } from './components/Icons.jsx'
 
 function Private({ children }) {
   const { isAuthed } = useAuth()
@@ -27,6 +28,7 @@ export default function App() {
                 <NavLink to="/" end><IconMix size={19} /><span>Pha chế</span></NavLink>
                 <NavLink to="/history"><IconHistory size={19} /><span>Lịch sử</span></NavLink>
                 <NavLink to="/stats"><IconChart size={19} /><span>Thống kê</span></NavLink>
+                <NavLink to="/leaderboard"><IconTrophy size={19} /><span>Xếp hạng</span></NavLink>
               </nav>
               <div className="who">
                 <span className="avatar" aria-hidden="true">{(username || '?').charAt(0).toUpperCase()}</span>
@@ -46,6 +48,7 @@ export default function App() {
           <Route path="/" element={<Private><Play /></Private>} />
           <Route path="/history" element={<Private><History /></Private>} />
           <Route path="/stats" element={<Private><Stats /></Private>} />
+          <Route path="/leaderboard" element={<Private><Leaderboard /></Private>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

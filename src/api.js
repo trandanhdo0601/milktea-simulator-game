@@ -45,4 +45,7 @@ export const api = {
   submit: (b) => request('/api/game/submit', { method: 'POST', body: b }),
   history: (page = 0, size = 10) => request(`/api/game/history?page=${page}&size=${size}`),
   statistics: () => request('/api/game/statistics'),
+  // type: TOTAL_SCORE | PERFECT_COUNT | SPEEDRUN, limit: 1..100 (BE mặc định 20)
+  leaderboard: (type = 'TOTAL_SCORE', limit = 20) =>
+    request(`/api/game/leaderboard?type=${encodeURIComponent(type)}&limit=${limit}`),
 }

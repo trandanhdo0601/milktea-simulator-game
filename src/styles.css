@@ -386,3 +386,42 @@ tbody tr:hover { background: #faf7ff; }
   .combo small { display: none; }
   .patience-label { font-size: 0; gap: 0; } /* mobile: chỉ giữ icon đồng hồ */
 }
+
+/* ---------- Thời gian pha (Lịch sử) & ô thống kê thời gian ---------- */
+.c-dur { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+.c-dur span { display: inline-flex; align-items: center; gap: .3rem; }
+.tile-num--sm { font-size: 2.4rem; }
+.tile-best .muted { font-size: .9rem; }
+
+/* ---------- Bảng xếp hạng ---------- */
+.lb-tabs { margin-top: .2rem; }
+.board th.num, .board td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.board td.hl { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--taro-deep); background: rgba(231, 222, 251, .45); }
+.board tr.me td { background: var(--butter-soft); }
+.board tr.me td.hl { background: #ffe9a8; }
+.c-name { font-weight: 600; }
+.c-name .you { margin-left: .5rem; padding: .05rem .5rem; font-size: .72rem; font-weight: 700; color: #fff; background: var(--berry); border-radius: 999px; }
+.rank-badge { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding-inline: .3rem; font-family: var(--font-display); font-weight: 800; background: var(--taro-soft); border-radius: 50%; }
+.rank-badge.gold { background: var(--butter); border: 2px solid var(--ink); }
+.rank-badge.silver { background: #e4e6ee; border: 2px solid var(--ink); }
+.rank-badge.bronze { background: #f2c9a0; border: 2px solid var(--ink); }
+.board-gap td { padding-block: .2rem; text-align: center; color: var(--muted); letter-spacing: .3em; border-bottom: 0; }
+
+@media (max-width: 760px) {
+  /* lịch sử: thêm ô thời gian pha cạnh số đơn */
+  .history tr { grid-template-columns: auto 1fr auto; grid-template-areas: 'time time rating' 'order dur score' 'recipe recipe recipe'; }
+  .history .c-dur { grid-area: dur; align-self: center; }
+
+  /* bảng xếp hạng → thẻ */
+  .board thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .board, .board tbody { display: block; }
+  .board tr { display: grid; grid-template-columns: auto 1fr repeat(2, auto); gap: .3rem .9rem; align-items: center; padding: .85rem 1rem; border-bottom: 1.5px solid var(--line); }
+  .board tr.board-gap { display: block; }
+  .board td { display: block; padding: 0; border: 0; background: none !important; }
+  .board .c-rank { grid-row: span 2; }
+  .board .c-name { grid-column: 2 / -1; }
+  .board td.num { text-align: left; font-size: .82rem; }
+  .board td.num::before { content: attr(data-label) ': '; color: var(--muted); font-weight: 500; }
+  .board td.hl { font-size: .95rem; color: var(--taro-deep); }
+  .board tr.me { background: var(--butter-soft); }
+}
