@@ -1,17 +1,17 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3307/milk_tea_game?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
-    username: game_user
-    password: ${MYSQL_PASSWORD:MilkTeaApp@2024!}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3307/milk_tea_game?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh}
+    username: ${SPRING_DATASOURCE_USERNAME:game_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:${MYSQL_PASSWORD:MilkTeaApp@2024!}}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         dialect: org.hibernate.dialect.MySQLDialect
 
   flyway:
@@ -20,14 +20,16 @@ spring:
     baseline-on-migrate: true
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:${PORT:8080}}
 
 app:
   jwt:
-    secret: ${JWT_SECRET:bWlsa1RlYUdhbWVTZWNyZXRLZXlGb3JKV1RBdXRoZW50aWNhdGlvbjIwMjQ=}
-    expiration: ${JWT_EXPIRATION:86400000}
+    secret: ${APP_JWT_SECRET:${JWT_SECRET:bWlsa1RlYUdhbWVTZWNyZXRLZXlGb3JKV1RBdXRoZW50aWNhdGlvbjIwMjQ=}}
+    expiration: ${APP_JWT_EXPIRATION:${JWT_EXPIRATION:86400000}}
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:${CORS_ALLOWED_ORIGINS:*}}
 
 logging:
   level:
-    com.example.milkteagame: DEBUG
+    com.example.milkteagame: INFO
     org.springframework.security: INFO
