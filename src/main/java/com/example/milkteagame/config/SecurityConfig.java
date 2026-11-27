@@ -44,11 +44,14 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Endpoint công khai
+                // Endpoint công khai cho authentication
                 .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
-                // Tất cả endpoint game yêu cầu xác thực
+                // Tất cả endpoint game yêu cầu xác thực JWT
                 .requestMatchers("/api/game/**").authenticated()
-                .anyRequest().authenticated()
+                // Mọi API khác phải xác thực
+                .requestMatchers("/api/**").authenticated()
+                // Cho phép công khai tất cả tài nguyên Frontend (HTML, CSS, JS và client-side routes)
+                .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -74,9 +77,7 @@ public class SecurityConfig {
     }
 
     /**
-     * CORS: cho phép Frontend gọi API.
-     * Cấu hình qua app.cors.allowed-origins hoặc biến môi trường APP_CORS_ALLOWED_ORIGINS.
-     * Mặc định là "*" (tất cả origin).
+     * CORS: cho phép Frontend gọi API (hữu ích khi dev hoặc chạy từ origin khác).
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
