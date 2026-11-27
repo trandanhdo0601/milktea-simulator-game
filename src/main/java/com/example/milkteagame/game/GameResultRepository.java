@@ -44,11 +44,11 @@ public interface GameResultRepository extends JpaRepository<GameResult, Long> {
             SELECT 
                 u.id AS userId,
                 u.username AS username,
-                CAST(COALESCE(SUM(gr.score), 0) AS SIGNED) AS totalScore,
+                COALESCE(SUM(gr.score), 0) AS totalScore,
                 COUNT(gr.id) AS totalPlays,
-                CAST(COALESCE(SUM(CASE WHEN gr.is_perfect = 1 THEN 1 ELSE 0 END), 0) AS SIGNED) AS perfectPlays,
-                CAST(COALESCE(SUM(gr.duration_seconds), 0.0) AS DOUBLE) AS totalPlayTimeSeconds,
-                CAST(COALESCE(AVG(gr.score), 0.0) AS DOUBLE) AS avgScore,
+                COALESCE(SUM(CASE WHEN gr.is_perfect = 1 THEN 1 ELSE 0 END), 0) AS perfectPlays,
+                COALESCE(SUM(gr.duration_seconds), 0.0) AS totalPlayTimeSeconds,
+                COALESCE(AVG(gr.score), 0.0) AS avgScore,
                 MIN(CASE WHEN gr.is_perfect = 1 AND gr.duration_seconds > 0 THEN gr.duration_seconds ELSE NULL END) AS fastestPerfectSeconds
             FROM users u
             JOIN game_results gr ON u.id = gr.user_id
@@ -62,11 +62,11 @@ public interface GameResultRepository extends JpaRepository<GameResult, Long> {
             SELECT 
                 u.id AS userId,
                 u.username AS username,
-                CAST(COALESCE(SUM(gr.score), 0) AS SIGNED) AS totalScore,
+                COALESCE(SUM(gr.score), 0) AS totalScore,
                 COUNT(gr.id) AS totalPlays,
-                CAST(COALESCE(SUM(CASE WHEN gr.is_perfect = 1 THEN 1 ELSE 0 END), 0) AS SIGNED) AS perfectPlays,
-                CAST(COALESCE(SUM(gr.duration_seconds), 0.0) AS DOUBLE) AS totalPlayTimeSeconds,
-                CAST(COALESCE(AVG(gr.score), 0.0) AS DOUBLE) AS avgScore,
+                COALESCE(SUM(CASE WHEN gr.is_perfect = 1 THEN 1 ELSE 0 END), 0) AS perfectPlays,
+                COALESCE(SUM(gr.duration_seconds), 0.0) AS totalPlayTimeSeconds,
+                COALESCE(AVG(gr.score), 0.0) AS avgScore,
                 MIN(CASE WHEN gr.is_perfect = 1 AND gr.duration_seconds > 0 THEN gr.duration_seconds ELSE NULL END) AS fastestPerfectSeconds
             FROM users u
             JOIN game_results gr ON u.id = gr.user_id
@@ -80,11 +80,11 @@ public interface GameResultRepository extends JpaRepository<GameResult, Long> {
             SELECT 
                 u.id AS userId,
                 u.username AS username,
-                CAST(COALESCE(SUM(gr.score), 0) AS SIGNED) AS totalScore,
+                COALESCE(SUM(gr.score), 0) AS totalScore,
                 COUNT(gr.id) AS totalPlays,
-                CAST(COALESCE(SUM(CASE WHEN gr.is_perfect = 1 THEN 1 ELSE 0 END), 0) AS SIGNED) AS perfectPlays,
-                CAST(COALESCE(SUM(gr.duration_seconds), 0.0) AS DOUBLE) AS totalPlayTimeSeconds,
-                CAST(COALESCE(AVG(gr.score), 0.0) AS DOUBLE) AS avgScore,
+                COALESCE(SUM(CASE WHEN gr.is_perfect = 1 THEN 1 ELSE 0 END), 0) AS perfectPlays,
+                COALESCE(SUM(gr.duration_seconds), 0.0) AS totalPlayTimeSeconds,
+                COALESCE(AVG(gr.score), 0.0) AS avgScore,
                 MIN(CASE WHEN gr.is_perfect = 1 AND gr.duration_seconds > 0 THEN gr.duration_seconds ELSE NULL END) AS fastestPerfectSeconds
             FROM users u
             JOIN game_results gr ON u.id = gr.user_id

@@ -98,10 +98,11 @@
             <scope>test</scope>
         </dependency>
         <!-- H2 in-memory database for testing -->
+        <!-- H2 in-memory database: dùng mặc định khi không có MySQL (Render, demo) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

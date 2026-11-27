@@ -1,23 +1,32 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3307/milk_tea_game?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh}
-    username: ${SPRING_DATASOURCE_USERNAME:game_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:${MYSQL_PASSWORD:MilkTeaApp@2024!}}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    # Mặc định: H2 nhúng sẵn — không cần bất kỳ dịch vụ database bên ngoài nào.
+    # Khi deploy với MySQL thật: đặt biến môi trường SPRING_DATASOURCE_URL,
+    # SPRING_DATASOURCE_USERNAME, SPRING_DATASOURCE_PASSWORD,
+    # JPA_DDL_AUTO=validate, FLYWAY_ENABLED=true
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:milk_tea_game;DB_CLOSE_DELAY=-1;MODE=MySQL;NON_KEYWORDS=USER}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    # driver-class-name được Spring Boot tự phát hiện từ URL (h2:// hoặc mysql://)
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: ${JPA_DDL_AUTO:create-drop}
     show-sql: false
     properties:
       hibernate:
         format_sql: false
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
 
   flyway:
-    enabled: true
+    # Chỉ bật Flyway khi dùng MySQL thật (đặt FLYWAY_ENABLED=true trên Render)
+    enabled: ${FLYWAY_ENABLED:false}
     locations: classpath:db/migration
     baseline-on-migrate: true
+
+  h2:
+    console:
+      enabled: false
 
 server:
   port: ${SERVER_PORT:${PORT:8080}}
