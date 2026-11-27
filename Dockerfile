@@ -37,4 +37,4 @@ COPY --from=be-build /app/target/milk-tea-game-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 10000
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-Xmx350m", "-Xms128m", "-Xss512k", "-jar", "app.jar"]
